@@ -6,12 +6,11 @@ DateSense is for detecting the format of date strings. It returns a convenient f
 
 ## Usage
 
-To parse one or more date strings using the default settings, you need only two lines. Here's an example that would output the string "%d %b %Y":
+To parse one or more date strings using the default settings, you need only two lines. Here's an example that outputs the string "%d %b %Y":
 
-    from DateSense.DSoptions import DSoptions
-    print DSoptions.detect_format( ["15 Dec 2014", "9 Jan 2015"] )
-    
-    > %d %b %Y
+    >>> from DateSense.DSoptions import DSoptions
+    >>> print DSoptions.detect_format( ["15 Dec 2014", "9 Jan 2015"] )
+    %d %b %Y
 
 ## Customization
 
