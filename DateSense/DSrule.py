@@ -6,8 +6,10 @@ from .DStoken import DStoken
 
 
 
-# Rules are where the real fun happens with date format detection. Please feel free to implement your own!
-# The only strictly necessary component of a rule class is that it has a rule(self, options) method where options is an optionsList object.
+# Rules are where the real fun happens with date format detection. Please
+# feel free to implement your own! The only strictly necessary component
+# of a DSrule class is that it has an apply(self, options) method
+# where options is a DSoptions object.
 
 
 
@@ -142,7 +144,7 @@ class DSPatternRule(object):
     attribute of DSoptions objects are evaluated during parsing.
     '''
 
-    def __init__(self, sequence, maxdistance=1, posscore=0, negscore=0):
+    def __init__(self, sequence, maxdistance=1, minmatchscore=0, posscore=0, negscore=0):
         '''Constructs a DSPatternRule object.
         Positive reinforcement: The scores of possibilities comprising
         a complete sequence as specified are affected. Wildcard tokens
@@ -161,6 +163,10 @@ class DSPatternRule(object):
             the sequence ('%H',':','%M') with a maxdistance of 1 would
             match %H:%M but not %H.%M. The sequence ('%H','%M') with a
             maxdistance of 2 would match both. Defaults to 1.
+        :param minmatchscore: (optional) The minimum score a directive
+            may have to be considered a potential member of the sequence.
+            (Does not apply to non-directive possibilities - those will
+            count at any score.) Defaults to 0.
         :param posscore: (optional) Increment the score of possibilities
             matching the "Positive reinforcement" condition by this much.
             Defaults to 0.
@@ -172,6 +178,7 @@ class DSPatternRule(object):
         self.negscore = negscore
         self.sequence = sequence
         self.maxdistance = maxdistance
+        self.minmatchscore = minmatchscore
         
     # Positive reinforcement: Possibilities comprising a complete pattern
     # Negative reinforcement: Directive possibilities in the pattern that were not found to be part of an instance of the pattern
@@ -193,10 +200,11 @@ class DSPatternRule(object):
                     onarg = 0
                     counter = 0
                     ordered_toks_current = []
-            # Does the token here match the pattern? (Only consider directives with scores greater than zero, and decorators of any score)
+            # Does the token here match the pattern?
+            # (Only consider directives with scores greater than or equal to self.minmatchscore, and decorators of any score)
             foundtok = 0
             for tok in toklist:
-                if (tok.score > 0 or tok.is_decorator()) and tok.text in self.sequence[onarg]:
+                if (tok.score >= self.minmatchscore or tok.is_decorator()) and tok.text in self.sequence[onarg]:
                     ordered_toks_current.append(tok)
                     foundtok += 1
             # One or more possibilities here match the pattern! On to the next expected possibility in the pattern sequence.
