@@ -184,7 +184,7 @@ class DSoptions(object):
     @staticmethod
     def get_default_tzoffsetdirective():
         '''Returns the default timezone offset directive.'''
-        return DSoptions.dir_Z
+        return DSoptions.dir_z
     
     @staticmethod
     def get_default_rules():
@@ -306,6 +306,7 @@ class DSoptions(object):
         date_tokens = DStoken.tokenize_date(dates[0])
         self.init_with_date_tokens(date_tokens)
         self.cull_with_dates(dates)
+        self.cull_decorators()
     
     def process(self, dupepenalty=-2):
         '''Process token possibility data for a set of date strings by
@@ -339,7 +340,8 @@ class DSoptions(object):
     # init_with_date_tokens is what you would call first, to generate an initial list of possibilities for each token in a date string
     # cull_with_dates is what you would call next, to use a list of date strings to further inform the parser about what tokens have allowed values for which directives
     # cull_with_date_tokens is called by cull_with_dates on individual tokenized date strings in the list passed to it
-    # apply_rules is what you would call after cull_with_dates, it applies a set of rules to the possibility data (Rules are assumptions the parser is allowed to make regarding how dates should be formatted)
+    # cull_decorators is what you would call after cull_with_dates, it rids of non-directive possibilities anywhere that directive possibilities remain
+    # apply_rules comes next, it applies a set of rules to the possibility data (Rules are assumptions the parser is allowed to make regarding how dates should be formatted)
     # penalize_duplicates is what you would call last, it attempts to handle the scenario where a single directive is considered the most likely in more than one position (It assumes that a date format ought to have no more than one of each directive)
     
     def init_with_date_tokens(self, date_tokens):
@@ -352,31 +354,34 @@ class DSoptions(object):
             DStoken.tokenize_date() method, where the method's argument
             is a date string.
         '''
-        # build a map of what direrctives/whatever are allowed in the various places
-        for date_token in date_tokens:
-            numrange = None
-            # add the token as a potential decorator
-            allow_here = [DStoken.create_decorator(date_token.text)]
-            # if token is a number
-            if date_token.is_number():
-                number = int(date_token.text)
-                for option in self.numoptions:
-                    if option.includesvalue(number):
-                        allow_here.append(DStoken.create_number(option))
-                        numrange = [number,number]
-            # if token is a word
-            elif date_token.is_word():
-                for option in self.wordoptions:
-                    if option.includesvalue(date_token.text):
-                        allow_here.append(DStoken.create_word(option))
-            # if token is a timezone
-            elif date_token.is_timezone():
-                tztok = DStoken.create_timezone(self.tzoffsetdirective)
-                tztok.score += 1
-                allow_here.append(tztok)
-            # add the list of allowed directives/whatever for this token to the overall list
-            self.allowed.append(allow_here)
-            self.numranges.append(numrange)
+        toklist_count = len(date_tokens)
+        skip = False
+        for i in range(0,toklist_count):
+            if skip:
+                skip = False
+            else:
+                tok = date_tokens[i]
+                numrange = None
+                # Add the token as a potential decorator
+                allowhere = [DStoken.create_decorator(tok.text)]
+                # Token is a number
+                if tok.is_number():
+                    number = int(tok.text)
+                    for option in self.numoptions:
+                        if option.includesvalue(number):
+                            allowhere.append(DStoken.create_number(option))
+                            numrange = [number,number]
+                # Token is a word
+                elif tok.is_word():
+                    for option in self.wordoptions:
+                        if option.includesvalue(tok.text):
+                            allowhere.append(DStoken.create_word(option))
+                # Token is a timezone
+                if tok.is_timezone():
+                    allowhere.append(DStoken.create_timezone(self.tzoffsetdirective))
+                # Add the list of possibilities for this token to the overall list
+                self.allowed.append(allowhere)
+                self.numranges.append(numrange)
             
     def cull_with_dates(self, dates):
         '''Cull token possibility data using a set of date strings. The
@@ -427,7 +432,28 @@ class DSoptions(object):
                     elif date_tokens[i].is_word():
                         if not tok.option.includesvalue(date_tokens[i].text):
                             del self.allowed[i][j]
-
+                            
+    def cull_decorators(self):
+        '''Remove non-directive token possibilities where any directive
+        possibilities remain at that position.'''
+        for i in range(0,len(self.allowed)):
+            # Check for the presence of both decorator and non-decorator possibilities for this position
+            founddir = False
+            founddec = False
+            for tok in self.allowed[i]:
+                if not tok.is_decorator():
+                    founddir = True
+                else:
+                    founddec = True
+                if founddir and founddec:
+                    break
+            # If both directives and decorators are possibilities here, clear out the decorators.
+            if founddir and founddec:
+                for j in xrange(len(self.allowed[i])-1,-1,-1): # iterate backwards so we can remove elements without hiccuping
+                    tok = self.allowed[i][j]
+                    if tok.is_decorator():
+                        del self.allowed[i][j]
+            
     def apply_rules(self, rules):
         '''Apply all rules in a set to token possibility data.
         Scores for token possibilities will be affected according to the

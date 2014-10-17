@@ -165,20 +165,24 @@ class DStoken(object):
             
         # Additional pass for handling timezone tokens
         rettokens = []
-        reserved = None
-        for tok in tokens:
-            if reserved:
-                if tok.is_number() and len(tok.text) == DStoken.TIMEZONE_LENGTH:
-                    rettokens.append(DStoken.create_timezone(reserved.text+tok.text))
-                else:
-                    rettokens.append(DStoken.create_decorator(reserved.text))
-                    rettokens.append(tok)
-                reserved = None
+        skip = False
+        tokens_count = len(tokens)
+        for i in range(0,tokens_count):
+            if skip:
+                skip = False
             else:
+                tok = tokens[i]
                 if tok.is_timezone():
-                    reserved = tok
-                else:
-                    rettokens.append(tok)
+                    tokprev = tokens[i-1] if (i > 0) else None
+                    toknext = tokens[i+1] if (i < tokens_count-1) else None
+                    check_prev = (not tokprev) or not (tokprev.is_number() or tokprev.is_timezone())
+                    check_next = toknext and toknext.is_number() and (len(toknext.text) == DStoken.TIMEZONE_LENGTH)
+                    if check_prev and check_next:
+                        tok.text += toknext.text
+                        skip = True
+                    else:
+                        tok.kind = DStoken.KIND_DECORATOR
+                rettokens.append(tok)
                     
         # All done!
         return rettokens

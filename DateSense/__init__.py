@@ -10,11 +10,11 @@ make regarding the formatting of its input, take a look at the
 documentation for DSoptions.py.
 '''
 
-from DStoken import DStoken
-from DSrule import *
-from DSoptions import DSoptions
+from .DStoken import DStoken
+from .DSrule import *
+from .DSoptions import DSoptions
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 '''DateSense version number'''
 
 def detect_format( dates, formatRules=None, numOptions=None, wordOptions=None, tzOffsetDirective=None ):
@@ -42,3 +42,5 @@ def detect_format( dates, formatRules=None, numOptions=None, wordOptions=None, t
         DSoptions.get_default_tzoffsetdirective().
     '''
     return DSoptions.detect_format( dates, formatRules, numOptions, wordOptions, tzOffsetDirective )
+    
+    

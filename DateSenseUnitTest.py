@@ -121,24 +121,32 @@ class TestDateSense(unittest.TestCase):
     def test_16(self):
         '''Check nonstandard format'''
         assert Datetest( case="%A, %d. %B %Y %I:%M%p" ).run()
-        
+    
     def test_17(self):
+        '''Test timezone offsets'''
+        assert Datetest( data="+0100, -0300, GMT-0900", expected="%z, %z, %Z%z" ).run()
+    
+    def test_18(self):
+        '''Make sure "-YYYY" isn't interpreted as a timezone offset'''
+        assert Datetest( case="%m-%d-%Y" ).run()
+        
+    def test_19(self):
         '''Make sure it doesn't choke on having just one string as input'''
         assert Datetest( data="16 Oct 2014", expected="%d %b %Y" ).run()
     
-    def test_18(self):
+    def test_20(self):
         '''Expect the parser to spit out the most sensible assumption instead of the actual format'''
         assert Datetest( case="Mon Sep %p", expected="%a %b %p" ).run()
 
-    def test_19(self):
+    def test_21(self):
         '''Not equipped to handle this sort of nonsense, make sure a blank string is returned'''
         assert Datetest( case="%Y%m%d", expected="" ).run()
         
-    def test_20(self):
+    def test_22(self):
         '''Walter Sobchak is not a date, make sure a blank string is returned'''
         assert Datetest( data="Do you see what happens when you find a stranger in the Alps?", expected="" ).run()
         
-    def test_21(self):
+    def test_23(self):
         '''Movies are not dates, make sure a blank string is returned'''
         assert Datetest( data=("2001: A Space Odyssey", "2010: The Year We Make Contact") , expected="" ).run()
     
