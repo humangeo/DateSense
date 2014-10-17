@@ -138,7 +138,7 @@ class DSLikelyRangeRule(object):
 
 class DSPatternRule(object):
     '''Pattern rules inform the parser that tokens commonly show
-    up in the sequence provided. ('%m','/','%d','/',('%y','%Y')
+    up in the sequence provided. ('%m','/','%d','/',('%y','%Y'))
     would be one example of such a sequence.
     DSPatternRule objects that are elements in the format_rules
     attribute of DSoptions objects are evaluated during parsing.
@@ -236,7 +236,7 @@ class DSPatternRule(object):
 
 
 class DSMutExclusionRule(object):
-    '''Mutually-exclusive rules indicate that a group of directives
+    '''Mutual exclusion rules indicate that a group of directives
     probably aren't going to show up in the same date string.
     ('%H','%I') would be an example of mutually-exclusive directives.
     DSMutExclusionRule objects that are elements in the format_rules
@@ -246,11 +246,12 @@ class DSMutExclusionRule(object):
     def __init__(self, directives, posscore=0, negscore=0):
         '''Constructs a DSMutExclusionRule object.
         Positive reinforcement: The highest-scoring instance of any of the
-        specified possibilities specified is found and the scores for that
-        possibility everywhere is affected.
+        specified possibilities is found and the scores for that same
+        possibility at any token where it's present is affected.
         Negative reinforcement: The highest-scoring instance of any of the
-        specified possibilities specified is found and the scores for all
-        the other specified possibilities everywhere are affected.
+        specified possibilities is found and the scores for all the other
+        specified possibilities at any token where they're present are
+        affected.
         Returns the DSMutExclusionRule object.
         
         :param directives: A set of directives that the rule applies to,
