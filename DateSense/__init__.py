@@ -15,3 +15,6 @@ from DSrule import *
 from DSoptions import DSoptions
 
 __version__ = '1.0.0'
+
+def detect_format( dates, formatRules=None, numOptions=None, wordOptions=None, tzOffsetDirective=None ):
+    return DSoptions.detect_format( dates, formatRules, numOptions, wordOptions, tzOffsetDirective )

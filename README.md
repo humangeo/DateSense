@@ -9,7 +9,7 @@ DateSense is for detecting the format of date strings. It can be used to return 
 To parse one or more date strings using default settings, you need only two lines. Here's an example that outputs the string "%d %b %Y":
 
     >>> import DateSense
-    >>> print DateSense.DSoptions.detect_format( ["15 Dec 2014", "9 Jan 2015"] )
+    >>> print DateSense.detect_format( ["15 Dec 2014", "9 Jan 2015"] )
     %d %b %Y
 
 ## Customization

@@ -40,7 +40,7 @@ class Datetest(object):
 
     def run(self):
         '''Run the test, returns true if passed and false if failed.'''
-        self.options = DateSense.DSoptions.detect_format(self.data)
+        self.options = DateSense.detect_format(self.data)
         self.formatstr = self.options.get_format_string()
         success = (self.formatstr == self.expected)
         
