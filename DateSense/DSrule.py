@@ -18,7 +18,7 @@ class DSDelimiterRule(object):
     attribute of DSoptions objects are evaluated during parsing.
     '''
     
-    def __init__(self, posscore, negscore, directives, delimiters):
+    def __init__(self, directives, delimiters, posscore=0, negscore=0):
         '''Constructs a DSDelimiterRule object.
         Positive reinforcement: The scores of specified possibilities that
         are adjacent to one or more tokens where any of the specified
@@ -28,14 +28,16 @@ class DSDelimiterRule(object):
         are a possibility are affected.
         Returns the DSDelimiterRule object.
         
-        :param posscore: Increment the score of possibilities matching the
-            "Positive reinforcement" condition by this much.
-        :param negscore: Increment the score of possibilities matching the
-            "Negative reinforcement" condition by this much.
         :param directives: A directive or set of directives that the rule
             applies to, like ('%H','%I','%M','%S').
         :param delimiters: A delimiter or set of delimiters that the rule 
             applies to, like ':'.
+        :param posscore: (optional) Increment the score of possibilities
+            matching the "Positive reinforcement" condition by this much.
+            Defaults to 0.
+        :param negscore: (optional) Increment the score of possibilities
+            matching the "Negative reinforcement" condition by this much.
+            Defaults to 0.
         '''
         self.posscore = posscore
         self.negscore = negscore
@@ -83,7 +85,7 @@ class DSLikelyRangeRule(object):
     attribute of DSoptions objects are evaluated during parsing.
     '''
     
-    def __init__(self, posscore, negscore, directives, likelyrange):
+    def __init__(self, directives, likelyrange, posscore=0, negscore=0):
         '''Constructs a DSLikelyRangeRule object.
         Positive reinforcement: The scores of specified directives where
         the encountered values are all within the likely range are
@@ -93,10 +95,6 @@ class DSLikelyRangeRule(object):
         affected.
         Returns the DSLikelyRangeRule object.
         
-        :param posscore: Increment the score of possibilities matching the
-            "Positive reinforcement" condition by this much.
-        :param negscore: Increment the score of possibilities matching the
-            "Negative reinforcement" condition by this much.
         :param directives: A directive or set of directives that the rule
             applies to, like '%S'.
         :param likelyrange: Min and max range that any values for the
@@ -104,6 +102,12 @@ class DSLikelyRangeRule(object):
             recommended you use a tuple, like (0, 59). The value at index 0
             will be considered the minimum and index 1 the maximum. The
             range is inclusive.
+        :param posscore: (optional) Increment the score of possibilities
+            matching the "Positive reinforcement" condition by this much.
+            Defaults to 0.
+        :param negscore: (optional) Increment the score of possibilities
+            matching the "Negative reinforcement" condition by this much.
+            Defaults to 0.
         '''
         self.posscore = posscore
         self.negscore = negscore
@@ -138,7 +142,7 @@ class DSPatternRule(object):
     attribute of DSoptions objects are evaluated during parsing.
     '''
 
-    def __init__(self, posscore, negscore, sequence, maxdistance):
+    def __init__(self, sequence, maxdistance=1, posscore=0, negscore=0):
         '''Constructs a DSPatternRule object.
         Positive reinforcement: The scores of possibilities comprising
         a complete sequence as specified are affected. Wildcard tokens
@@ -150,17 +154,19 @@ class DSPatternRule(object):
         token possibilities are not affected.
         Returns the DSPatternRule object.
         
-        :param posscore: Increment the score of possibilities matching the
-            "Positive reinforcement" condition by this much.
-        :param negscore: Increment the score of possibilities matching the
-            "Negative reinforcement" condition by this much.
         :param sequence: A set of token possibilities, like
             ('%H',':','%M',':','%S').
-        :param maxdistance: How many wildcard tokens are allowed to be in
-            between those defined in the sequence. For example,
+        :param maxdistance: (optional) How many wildcard tokens are allowed
+            to be in between those defined in the sequence. For example,
             the sequence ('%H',':','%M') with a maxdistance of 1 would
             match %H:%M but not %H.%M. The sequence ('%H','%M') with a
-            maxdistance of 2 would match both.
+            maxdistance of 2 would match both. Defaults to 1.
+        :param posscore: (optional) Increment the score of possibilities
+            matching the "Positive reinforcement" condition by this much.
+            Defaults to 0.
+        :param negscore: (optional) Increment the score of possibilities
+            matching the "Negative reinforcement" condition by this much.
+            Defaults to 0.
         '''
         self.posscore = posscore
         self.negscore = negscore
@@ -229,7 +235,7 @@ class DSMutExclusionRule(object):
     attribute of DSoptions objects are evaluated during parsing.
     '''
     
-    def __init__(self, posscore, negscore, directives):
+    def __init__(self, directives, posscore=0, negscore=0):
         '''Constructs a DSMutExclusionRule object.
         Positive reinforcement: The highest-scoring instance of any of the
         specified possibilities specified is found and the scores for that
@@ -239,12 +245,14 @@ class DSMutExclusionRule(object):
         the other specified possibilities everywhere are affected.
         Returns the DSMutExclusionRule object.
         
-        :param posscore: Increment the score of possibilities matching the
-            "Positive reinforcement" condition by this much.
-        :param negscore: Increment the score of possibilities matching the
-            "Negative reinforcement" condition by this much.
         :param directives: A set of directives that the rule applies to,
             like ('%H','%I').
+        :param posscore: (optional) Increment the score of possibilities
+            matching the "Positive reinforcement" condition by this much.
+            Defaults to 0.
+        :param negscore: (optional) Increment the score of possibilities
+            matching the "Negative reinforcement" condition by this much.
+            Defaults to 0.
         '''
         self.posscore = posscore
         self.negscore = negscore

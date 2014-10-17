@@ -132,35 +132,35 @@ class DSoptions(object):
     
     # Default formatting rules, should be suitable for mostly any English-language date format
     # Format rules tell the parser what dates usually look like and how specifically to act on those assumptions.
-    rule_delim_date =               DSDelimiterRule(2, 0, ('%d','%m','%y','%Y'), ('-','/'))         # Days, months, years usually delimited by '-' or '/'
-    rule_delim_ISO_date =           DSDelimiterRule(2, -3, ('%G','%g','%V','%u','%j'), ('-','W'))   # ISO 8601 date directives should always be adjacent to '-' (or sometimes 'W')
-    rule_delim_time =               DSDelimiterRule(2, 0, ('%H','%I','%M','%S'), ':')               # hours, minutes, seconds usually delimited by ':'
-    rule_range_years =              DSLikelyRangeRule(1, -1, ('%Y','%G'), (1000,3000))              # Year is probably between 1000 and 3000
-    rule_range_cent =               DSLikelyRangeRule(0, -1, '%C', (10,30))                         # Century is probably between 10 and 30
-    rule_range_secs =               DSLikelyRangeRule(0, -1, '%S', (0,59))                          # Seconds CAN be 60 or 61 due to leap seconds, but that's very rare. Normally it'll be in the range (0, 59).
-    rule_pattern_hms =              DSPatternRule(3, 0, (('%H','%I'),':','%M',':','%S'), 1)         # hh:mm:ss
-    rule_pattern_hm =               DSPatternRule(1, 0, (('%H','%I'),':','%M'), 1)                  # hh:mm
-    rule_pattern_12hr =             DSPatternRule(3, 0, ('%I','%M','%p'),4)                         # hh:mm<:ss> %p (12-hour with AM/PM)
-    rule_pattern_tz =               DSPatternRule(3, 0, ('%Z','%z'), 1)                             # Timezone + offset
-    rule_pattern_US_date =          DSPatternRule(4, 0, (('%m','%b','%B'),'%d',('%y','%Y')), 2)     # American - months then days then years
-    rule_pattern_US_Bd =            DSPatternRule(3, 0, ('%d',('%m','%b','%B'),('%y','%Y')), 2)     # European - days then months then years
-    rule_pattern_EU_date =          DSPatternRule(2, 0, (('%B','%b'),' ','%d'), 1)                  # American - word month then days
-    rule_pattern_EU_dB =            DSPatternRule(2, 0, ('%d',' ',('%B','%b')), 1)                  # European - days then word month
-    rule_pattern_ymd =              DSPatternRule(4, 0, ('%Y','-','%m','-','%d'), 1)                # YYYY-MM-DD
-    rule_pattern_verbose_day =      DSPatternRule(1, 0, ('day','%d'), 4)                            # Word "day" typically precedes the day
-    rule_pattern_verbose_month =    DSPatternRule(1, 0, ('month',('%m','%b','%B')), 4)              # Word "month" typically precedes the month
-    rule_pattern_verbose_year =     DSPatternRule(1, 0, ('year',('%Y','%y')), 4)                    # Word "year" typically precedes the year
-    rule_pattern_verbose_time =     DSPatternRule(1, 0, ('time',('%H','%I')), 4)                    # Word "time" typically precedes the time
-    rule_pattern_ISO_W =            DSPatternRule(4, 0, ('W','%V'), 1)                              # ISO 8601 date formats often include W%V
-    rule_pattern_ISO_date =         DSPatternRule(4, 0, (('%G','%g'),'-','W','%V','-','%u'), 1)     # ISO 8601 date with week number
-    rule_pattern_ISO_week =         DSPatternRule(3, 0, (('%G','%g'),'-','W','%V'), 1)              # ISO 8601 week
-    rule_pattern_ISO_ordinal =      DSPatternRule(2, 0, (('%G','%g'),'-','%j'), 1)                  # ISO 8601 ordinal date
-    rule_mutexc_24h_12h =           DSMutExclusionRule(0, -2, ('%H',('%I','%p')))                   # 24-hour and 12-hour don't mix
-    rule_mutexc_yr_digits =         DSMutExclusionRule(0, -2, ('%Y','%y','%G','%g'))                # No more than one year directive
-    rule_mutexc_yr_cent =           DSMutExclusionRule(0, -2, (('%Y','%G'),'%C'))                   # no sense in both YYYY and century
-    rule_mutexc_months =            DSMutExclusionRule(0, -2, ('%B','%b','%m'))                     # No more than one month directive
-    rule_mutexc_wkdays =            DSMutExclusionRule(0, -2, ('%A','%a','%u','%w'))                # No more than one weekday directive
-    rule_mutexc_weeks =             DSMutExclusionRule(0, -2, ('%V','%U','%W'))                     # No more than one week of year directive
+    rule_delim_date =               DSDelimiterRule( ('%d','%m','%y','%Y'), ('-','/'), posscore=2 )                     # Days, months, years usually delimited by '-' or '/'
+    rule_delim_ISO_date =           DSDelimiterRule( ('%G','%g','%V','%u','%j'), ('-','W'), posscore=2, negscore=-3 )   # ISO 8601 date directives should always be adjacent to '-' (or sometimes 'W')
+    rule_delim_time =               DSDelimiterRule( ('%H','%I','%M','%S'), ':', posscore=2 )                           # hours, minutes, seconds usually delimited by ':'
+    rule_range_years =              DSLikelyRangeRule( ('%Y','%G'), (1000,3000), posscore=1, negscore=-1 )              # Year is probably between 1000 and 3000
+    rule_range_cent =               DSLikelyRangeRule( '%C', (10,30), negscore=-1)                                      # Century is probably between 10 and 30
+    rule_range_secs =               DSLikelyRangeRule( '%S', (0,59), negscore=-1)                                       # Seconds CAN be 60 or 61 due to leap seconds, but that's very rare. Normally it'll be in the range (0, 59).
+    rule_pattern_hms =              DSPatternRule( (('%H','%I'),':','%M',':','%S'), 1, posscore=3 )                     # hh:mm:ss
+    rule_pattern_hm =               DSPatternRule( (('%H','%I'),':','%M'), 1, posscore=1 )                              # hh:mm
+    rule_pattern_12hr =             DSPatternRule( ('%I','%M','%p'), 4, posscore=3 )                                    # hh:mm<:ss> %p (12-hour with AM/PM)
+    rule_pattern_tz =               DSPatternRule( ('%Z','%z'), 1, posscore=2 )                                         # Timezone + offset
+    rule_pattern_US_date =          DSPatternRule( (('%m','%b','%B'),'%d',('%y','%Y')), 2, posscore=4 )                 # American - months then days then years
+    rule_pattern_US_Bd =            DSPatternRule( ('%d',('%m','%b','%B'),('%y','%Y')), 2, posscore=3 )                 # European - days then months then years
+    rule_pattern_EU_date =          DSPatternRule( (('%B','%b'),' ','%d'), 1, posscore=2 )                              # American - word month then days
+    rule_pattern_EU_dB =            DSPatternRule( ('%d',' ',('%B','%b')), 1, posscore=2 )                              # European - days then word month
+    rule_pattern_ymd =              DSPatternRule( ('%Y','-','%m','-','%d'), 1, posscore=4 )                            # YYYY-MM-DD
+    rule_pattern_verbose_day =      DSPatternRule( ('day','%d'), 4, posscore=2 )                                        # Word "day" typically precedes the day
+    rule_pattern_verbose_month =    DSPatternRule( ('month',('%m','%b','%B')), 4, posscore=2 )                          # Word "month" typically precedes the month
+    rule_pattern_verbose_year =     DSPatternRule( ('year',('%Y','%y')), 4, posscore=2 )                                # Word "year" typically precedes the year
+    rule_pattern_verbose_time =     DSPatternRule( ('time',('%H','%I')), 4, posscore=2 )                                # Word "time" typically precedes the time
+    rule_pattern_ISO_W =            DSPatternRule( ('W','%V'), 1, posscore=2 )                                          # ISO 8601 date formats often include W%V
+    rule_pattern_ISO_date =         DSPatternRule( (('%G','%g'),'-','W','%V','-','%u'), 1, posscore=4 )                 # ISO 8601 date with week number
+    rule_pattern_ISO_week =         DSPatternRule( (('%G','%g'),'-','W','%V'), 1, posscore=3 )                          # ISO 8601 week
+    rule_pattern_ISO_ordinal =      DSPatternRule( (('%G','%g'),'-','%j'), 1, posscore=2 )                              # ISO 8601 ordinal date
+    rule_mutexc_24h_12h =           DSMutExclusionRule( ('%H',('%I','%p')), negscore=-2 )                               # 24-hour and 12-hour don't mix
+    rule_mutexc_yr_digits =         DSMutExclusionRule( ('%Y','%y','%G','%g'), negscore=-2 )                            # No more than one year directive
+    rule_mutexc_yr_cent =           DSMutExclusionRule( (('%Y','%G'),'%C'), negscore=-2 )                               # no sense in both YYYY and century
+    rule_mutexc_months =            DSMutExclusionRule( ('%B','%b','%m'), negscore=-2 )                                 # No more than one month directive
+    rule_mutexc_wkdays =            DSMutExclusionRule( ('%A','%a','%u','%w'), negscore=-2 )                            # No more than one weekday directive
+    rule_mutexc_weeks =             DSMutExclusionRule( ('%V','%U','%W'), negscore=-2 )                                 # No more than one week of year directive
     
     # These methods are for getting default parser options.
     @staticmethod
