@@ -300,7 +300,7 @@ class DSoptions(object):
             the formatting should be detected.
         '''
         # If it's just one string, turn it into a collection like the methods expect
-        if isinstance(dates, basestring):
+        if isinstance(dates, str):
             dates = [ dates ]
         # Do the initializing
         date_tokens = DStoken.tokenize_date(dates[0])
@@ -409,7 +409,7 @@ class DSoptions(object):
         '''
         itrrange = min(len(self.allowed),len(date_tokens))
         for i in range(0,itrrange):
-            for j in xrange(len(self.allowed[i])-1,-1,-1): # iterate backwards so we can remove elements without hiccuping
+            for j in range(len(self.allowed[i])-1,-1,-1): # iterate backwards so we can remove elements without hiccuping
                 tok = self.allowed[i][j]
                 # if it's not a directive, just check for equivalency
                 if tok.is_decorator():
@@ -449,7 +449,7 @@ class DSoptions(object):
                     break
             # If both directives and decorators are possibilities here, clear out the decorators.
             if founddir and founddec:
-                for j in xrange(len(self.allowed[i])-1,-1,-1): # iterate backwards so we can remove elements without hiccuping
+                for j in range(len(self.allowed[i])-1,-1,-1): # iterate backwards so we can remove elements without hiccuping
                     tok = self.allowed[i][j]
                     if tok.is_decorator():
                         del self.allowed[i][j]
@@ -520,7 +520,7 @@ class DSoptions(object):
                 else:
                     hightoks[tok.text].append(tok)
         # Affect the score of those possiblities everywhere else
-        for key, value in hightoks.items():
+        for key, value in list(hightoks.items()):
             highest = None
             for tok in value:
                 if (not highest) or tok.score > highest.score:
