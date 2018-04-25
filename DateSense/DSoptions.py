@@ -300,7 +300,7 @@ class DSoptions(object):
             the formatting should be detected.
         '''
         # If it's just one string, turn it into a collection like the methods expect
-        if isinstance(dates, str):
+        if isinstance(dates, ("".__class__, u"".__class__)):
             dates = [ dates ]
         # Do the initializing
         date_tokens = DStoken.tokenize_date(dates[0])
@@ -520,7 +520,7 @@ class DSoptions(object):
                 else:
                     hightoks[tok.text].append(tok)
         # Affect the score of those possiblities everywhere else
-        for key, value in list(hightoks.items()):
+        for key, value in hightoks.items():
             highest = None
             for tok in value:
                 if (not highest) or tok.score > highest.score:
