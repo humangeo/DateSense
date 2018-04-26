@@ -45,11 +45,11 @@ class Datetest(object):
         
         if success:
             casestr = " From: '" + (self.case if self.case else str(self.data)) + "'"
-            print "GOOD: Got: '" + self.formatstr + "'" + casestr
+            print("GOOD: Got: '" + self.formatstr + "'" + casestr)
             
         else:
-            print "FAIL: Got: '" + self.formatstr + "' Expected: '" + self.expected + "'"
-            print self.options.get_long_debug_string()
+            print("FAIL: Got: '" + self.formatstr + "' Expected: '" + self.expected + "'")
+            print(self.options.get_long_debug_string())
             
         return success
         
@@ -153,7 +153,7 @@ class TestDateSense(unittest.TestCase):
     
     
 if __name__ == '__main__':
-    print "DateSense version: " + DateSense.__version__
+    print("DateSense version: " + DateSense.__version__)
     unittest.main()
     
     
